@@ -6,7 +6,6 @@ namespace Proglum\JsonApi\Endpoint\Concerns;
 
 use Proglum\JsonApi\Models\Model;
 use Proglum\JsonApi\Http\Exceptions\ValidationException;
-use App\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -29,8 +28,6 @@ trait SavesRelationships
      */
     public function addRelationships(Model $resource, array $relationships)
     {
-        Log::debug(get_class($this) . ' -  addRelationships()');
-
         foreach ($relationships as $relationshipType => $relationshipData) {
             $relationshipData = Arr::get($relationshipData, 'data');
 
@@ -62,10 +59,7 @@ trait SavesRelationships
      */
     public function updateRelationships(Model $resource, array $relationshipsCategories): bool
     {
-        Log::debug('SavesRelationships -  updateRelationships()', ['count' => count($relationshipsCategories)]);
-
         if (empty($relationshipsCategories)) {
-            Log::debug('No relationships to update');
             return true;
         }
 
@@ -92,17 +86,11 @@ trait SavesRelationships
             }
         }
 
-        Log::debug('Relationships updated.');
         return true;
     }
 
     protected function updateToOneRelationship(Model $resource, string $relationshipCategory, ?array $data): bool
     {
-        Log::debug('SaveRelationships - updateToOneRelationship()', [
-            'model' => get_class($resource),
-            'relationshipCategory' => $relationshipCategory,
-        ]);
-
         // Validate $dat
         if (!empty($data)) {
             if (!isset($data['type']) || !isset($data['id'])) {
@@ -116,18 +104,15 @@ trait SavesRelationships
         switch (true) {
             case (is_null($resource->$relationshipCategory) && empty($data)):
                 // Nothing to update
-                Log::debug('Nothing to update.');
                 return true;
 
             case (is_null($resource->$relationshipCategory) && !empty($data)):
                 // Adding relationship
-                Log::debug('Adding relationship...');
                 $relation = $resource->$relationshipCategory();
                 $newId = $data['id'];
                 return $this->addSingleRelationship($resource, $relation, $newId);
 
             case (!is_null($resource->$relationshipCategory) && empty($data)):
-                Log::debug('Removing relationship...');
                 $relation = $resource->$relationshipCategory();
                 $existingId = $resource->$relationshipCategory->id;
                 return $this->removeSingleRelationship($resource, $relation, $existingId);
@@ -138,7 +123,6 @@ trait SavesRelationships
                 $newId = $data['id'];
                 if ($existingId == $newId) {
                     // Same, same - nothing to update
-                    Log::debug('Same, same - nothing to update');
                     return true;
                 }
 
@@ -155,30 +139,20 @@ trait SavesRelationships
         $currentRelationshipCount = ($resource->$relationshipCategory) ? $resource->$relationshipCategory->count() : 0;
         $newRelationshipCount = (empty($data) ? 0 : count(Arr::get($data, 'data')));
 
-        Log::debug('updateToManyRelationship()', [
-            'relationshipCategory' => $relationshipCategory,
-            'currentRelationshipCount' => $currentRelationshipCount,
-            'newRelationshipCount' => $newRelationshipCount,
-        ]);
-
         switch (true) {
             case $currentRelationshipCount == 0 && $newRelationshipCount == 0:
-                Log::debug('No changes needed.');
                 // Resource has no relationship entities and input data is empty, so nothing needs to change
                 break;
             case $currentRelationshipCount > 0 && $newRelationshipCount == 0:
-                Log::debug('Truncating relationships...');
                 // Data is empty, but there are relationship resources - truncate the relationship
                 $this->truncateRelationship($resource, $relationshipCategory);
                 break;
             case $currentRelationshipCount == 0 && $newRelationshipCount > 0:
-                Log::debug('Adding new relationships...');
                 // No current relationship, but need to save new ones
                 $this->addRelationship($resource, $relationshipCategory, Arr::get($data, 'data'));
                 break;
             case $currentRelationshipCount > 0 && $newRelationshipCount > 0:
             default:
-                Log::debug('Both adding and removal to relationship needed...');
                 $this->updateSingleRelationshipCategory($resource, $relationshipCategory, Arr::get($data, 'data'));
                 break;
         }
@@ -208,8 +182,6 @@ trait SavesRelationships
      */
     protected function updateSingleRelationshipCategory(Model $resource, string $relationshipType, array $data)
     {
-        Log::debug('updateSingleRelationshipCategory()', ['type' => $relationshipType]);
-
         /** @var Model[] $currentRelationships */
         $currentRelationships = $resource->$relationshipType;
         $currentIds = [];
@@ -222,14 +194,11 @@ trait SavesRelationships
         }
 
         if (Arr::sort($currentIds) == Arr::sort($newIds)) {
-            Log::debug('Relationship are identical. Nothing to update.');
             return true;
         }
 
         $removeIds = array_diff($currentIds, $newIds);
         $addIds = array_diff($newIds, $currentIds);
-
-        Log::debug('Relationship changes...', ['add count' => count($addIds), 'remove' => count($removeIds)]);
 
         foreach ($removeIds as $removeId) {
             $this->removeSingleRelationship($resource, $resource->$relationshipType(), $removeId);
@@ -248,11 +217,6 @@ trait SavesRelationships
      */
     public function addRelationship(Model $resource, string $type, ?array $relationships = [])
     {
-        Log::debug(get_class($this) . ' -  addRelationship()', [
-            'model' => get_class($resource),
-            'type' => $type,
-        ]);
-
         if ($relationships == null) {
             return;
         }
@@ -300,8 +264,6 @@ trait SavesRelationships
      */
     public function truncateRelationship(Model $resource, string $type)
     {
-        Log::debug(get_class($this) . ' -  truncateRelationship()', ['type' => $type]);
-
         // Validate relationship for this request
         $this->validateRelationships($resource, $type);
         // Create relation instance for this resource/type
@@ -336,8 +298,6 @@ trait SavesRelationships
      */
     public function removeRelationship(Model $resource, string $type, ?array $relationships = [])
     {
-        Log::debug('Removing relationship...');
-
         // Create relation instance for this resource/type
         /** @var Relation $relation */
         $relation = $resource->$type();
@@ -366,7 +326,6 @@ trait SavesRelationships
      */
     protected function removeSingleRelationship(Model $resource, Relation $relation, $removeId): bool
     {
-        Log::debug('Removing single relationship...');
         if ($relation instanceof BelongsTo) {
             if ((string) $resource->getAttribute($relation->getForeignKeyName()) === (string) $removeId) {
                 $relation->dissociate();
@@ -396,8 +355,6 @@ trait SavesRelationships
      */
     protected function addSingleRelationship(Model $resource, Relation $relation, $newId): bool
     {
-        Log::debug('Adding single relationship...');
-
         if ($relation instanceof BelongsTo) {
             /** @var Model $child */
             $child = $relation->getQuery()->getModel();

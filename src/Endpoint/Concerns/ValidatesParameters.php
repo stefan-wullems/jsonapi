@@ -7,7 +7,6 @@ namespace Proglum\JsonApi\Endpoint\Concerns;
 use Proglum\JsonApi\Http\Exceptions\ClientGeneratedIdException;
 use Proglum\JsonApi\Http\Exceptions\InvalidRequestException;
 use Proglum\JsonApi\Http\Exceptions\ValidationException;
-use App\Log;
 use Proglum\JsonApi\Models\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -34,28 +33,23 @@ trait ValidatesParameters
      */
     protected function requireType(Request $request, ?string $type = null, ?array $data = null): void
     {
-        Log::debug(get_class($this) . ' - requireType()');
         // Ensure the data attribute is present
         $data = $data ?: $request->input('data');
 
         if (!isset($data)) {
-            Log::debug('ValidationException - The data attribute is required.');
             throw new ValidationException('The data attribute is required.');
         }
 
         // The members data and errors MUST NOT coexist in the same document.
         if (null !== $request->input('errors')) {
-            Log::debug('ValidationException - The members data and errors MUST NOT coexist in the same document.');
             throw new ValidationException('The members data and errors MUST NOT coexist in the same document.');
         }
 
         if (!isset($data['type'])) {
-            Log::debug('ValidationException - The data attribute must have a type property.');
             throw new ValidationException('The data attribute must have a type property.');
         }
 
         if (!is_string($data['type'])) {
-            Log::debug('ValidationException - The value of the type member MUST be a string.');
             throw new ValidationException('The value of the type member MUST be a string.');
         }
 
@@ -64,7 +58,6 @@ trait ValidatesParameters
         }
 
         if ((string) $data['type'] !== (string) $type) {
-            Log::debug('ValidationException - The type property doesn\'t match the endpoint.');
             throw new ValidationException('The type property doesn\'t match the endpoint.');
         }
     }
@@ -77,8 +70,6 @@ trait ValidatesParameters
      */
     protected function requireId(Request $request, $id): void
     {
-        Log::debug(get_class($this) . ' - requireId()');
-
         // Ensure the data attribute is present
         $data = $request->input('data');
 
@@ -107,7 +98,6 @@ trait ValidatesParameters
      */
     protected function requireTypeAndId(Request $request, $id): void
     {
-        Log::debug(get_class($this) . ' requireTypeAndId()');
         $this->requireType($request);
         $this->requireId($request, $id);
     }
@@ -152,23 +142,16 @@ trait ValidatesParameters
      */
     protected function validateOrFail(array $attributes, array $relationships = [], ?Model $resource = null)
     {
-        Log::debug(get_class($this) . ' - validateOrFail()');
-
         /** @var ValidatorFactory $factory */
         $factory = app('validator');
         $rules = $this->prepareRules($resource);
         $attributes = $this->appendRelationships($attributes, $relationships);
 
-        Log::debug('Validating attributets...');
-
         $validator = $factory->make($attributes, $rules);
 
         if ($validator->fails()) {
-            Log::info($validator->getMessageBag()->first(), ['rules' => $rules]);
             throw new ValidationException($validator->getMessageBag()->first());
         }
-
-        Log::debug('Pass validation');
     }
 
     /**
@@ -180,18 +163,14 @@ trait ValidatesParameters
      */
     protected function validateRelationships(Model $resource, string $relationshipType, $data = false): void
     {
-        Log::debug(get_class($this) . ' - validateRelationships()');
-
         if (!$resource::isRelation($relationshipType)) {
             $errorMessage = 'Related resource ' . $relationshipType . ' is invalid for this endpoint.';
-            Log::info($errorMessage);
             throw new ValidationException($errorMessage);
         }
 
         if ($data !== false) {
             if (!isset($data)) {
                 $errorMessage = 'The data attribute of the ' . $relationshipType . ' relationship is required.';
-                Log::info($errorMessage);
                 throw new ValidationException($errorMessage);
             }
 
@@ -200,18 +179,12 @@ trait ValidatesParameters
                 if (!isset($record['type'])) {
                     $errorMessage = 'The data attribute of the ' . $relationshipType
                         . ' relationship must have a type property.';
-                    Log::info(get_class($this) . ' - validateRelationships() - throw exception', [
-                        'errorMessage' => $errorMessage,
-                    ]);
                     throw new ValidationException($errorMessage);
                 }
                 // Type must be a string
                 if (!is_string($record['type'])) {
                     $errorMessage = 'The type attribute of the ' . $relationshipType
                         . ' relationship must be a string.';
-                    Log::info(get_class($this) . ' - validateRelationships() - throw exception', [
-                        'errorMessage' => $errorMessage,
-                    ]);
                     throw new ValidationException($errorMessage);
                 }
 
@@ -227,17 +200,11 @@ trait ValidatesParameters
                 // ID must be set
                 if (!isset($record['id'])) {
                     $errorMessage = 'The id attribute of the ' . $relationshipType . ' relationship is required.';
-                    Log::info(get_class($this) . ' - validateRelationships() - throw exception', [
-                        'errorMessage' => $errorMessage,
-                    ]);
                     throw new ValidationException($errorMessage);
                 }
                 // ID must be a string
                 if (!is_string($record['id'])) {
                     $errorMessage = 'The id attribute of the ' . $relationshipType . ' relationship must be a string.';
-                    Log::info(get_class($this) . ' - validateRelationships() - throw exception', [
-                        'errorMessage' => $errorMessage,
-                    ]);
                     throw new ValidationException($errorMessage);
                 }
             }
@@ -251,8 +218,6 @@ trait ValidatesParameters
      */
     private function prepareRules(?Model $resource = null, bool $allowPartialFieldset = true): array
     {
-        Log::debug(get_class($this) . ' - prepareRules()');
-
         $rules = $this->validationRules();
         $rules = $this->prepareEntityId($rules, $resource);
 
@@ -312,8 +277,6 @@ trait ValidatesParameters
      */
     private function appendRelationships(array $attributes, ?array $relationships): array
     {
-        Log::debug(get_class($this) . ' - appendRelationships()');
-
         foreach ($relationships as $relationshipType => $relationshipData) {
             $relationshipData = Arr::get($relationshipData, 'data', []);
 

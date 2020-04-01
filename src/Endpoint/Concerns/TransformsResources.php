@@ -6,7 +6,6 @@ namespace Proglum\JsonApi\Endpoint\Concerns;
 
 use Proglum\JsonApi\Endpoint\Concerns\CollectionActions\PaginatesResources;
 use Proglum\JsonApi\Models\Transformers\AbstractTransformer;
-use App\Log;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -44,8 +43,6 @@ trait TransformsResources
      */
     public function transform($queryOrResource, bool $singleItem = false, bool $paginate = true): array
     {
-        Log::debug(get_class($this) . ' transform()');
-
         // Create Fractal manager instance and set serializer
         $fractal = new Manager();
         $fractal->setSerializer($this->serializer());

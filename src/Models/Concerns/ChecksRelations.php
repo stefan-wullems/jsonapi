@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Proglum\JsonApi\Models\Concerns;
 
-use App\Log;
 use BadMethodCallException;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use InvalidArgumentException;
@@ -38,11 +37,9 @@ trait ChecksRelations
      */
     public static function getRelationType(string $attribute): ?string
     {
-        Log::debug('ChecksRelations - getRelationType()');
         // Make sure the method exists
         if (!method_exists(get_called_class(), $attribute)) {
             $errorMessage = sprintf('Method does not exist: %s->%s', get_called_class(), $attribute);
-            Log::info('Throwing excepiton: ' . $errorMessage);
             throw new BadMethodCallException($errorMessage);
         }
 
@@ -63,7 +60,6 @@ trait ChecksRelations
                 get_called_class(),
                 $attribute
             );
-            Log::info('Throwing exception: ' . $errorMessage);
             throw new LogicException($errorMessage);
         }
 
@@ -85,7 +81,6 @@ trait ChecksRelations
             get_called_class(),
             $attribute
         );
-        Log::info('Throwing excepiton: ' . $errorMessage);
         throw new LogicException($errorMessage);
     }
 }

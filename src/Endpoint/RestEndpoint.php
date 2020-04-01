@@ -11,7 +11,6 @@ use Proglum\JsonApi\Endpoint\Contracts\Endpoint;
 use Proglum\JsonApi\Endpoint\Contracts\RestEndpoint as RestEndpointInterface;
 use Proglum\JsonApi\Models\Serializers\JsonApiSerializer;
 use Proglum\JsonApi\Models\Transformers\AbstractTransformer;
-use App\Log;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -116,7 +115,6 @@ abstract class RestEndpoint implements Endpoint, RestEndpointInterface
      */
     protected function query(): Builder
     {
-        Log::debug(get_class($this) . ' - query()');
         /** @var Model $model */
         $model = $this->model();
 

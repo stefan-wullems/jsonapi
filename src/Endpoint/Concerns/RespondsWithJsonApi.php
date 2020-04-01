@@ -6,7 +6,6 @@ namespace Proglum\JsonApi\Endpoint\Concerns;
 
 use Proglum\JsonApi\Http\JsonApiResponse;
 use Proglum\JsonApi\Models\Model;
-use App\Log;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,7 +41,6 @@ trait RespondsWithJsonApi
      */
     public function showResponse($queryOrResource)
     {
-        Log::debug(get_class($this) . ' - showResponse()');
         return $this->json($this->transformOne($queryOrResource), 200);
     }
 
@@ -64,7 +62,6 @@ trait RespondsWithJsonApi
      */
     public function deletedResponse()
     {
-        Log::debug('RespondsWithJsonApi - deleteResponse 204');
         return response('', 204);
     }
 
