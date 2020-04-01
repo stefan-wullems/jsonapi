@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Proglum\JsonApi\Endpoint\Concerns;
 
 use Proglum\JsonApi\Models\Transformers\AbstractTransformer;
-use App\Log;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -30,10 +29,6 @@ trait IncludesRelatedEntities
         $request = app('request');
 
         $includes = $request->input('include', []);
-        Log::debug('IncludesRelatedEntities - processIncludes', [
-            'queryOrResource' => get_class($queryOrResource),
-            'includes' => $includes,
-        ]);
 
         // If includes are empty, set to an empty array to skip parsing
         if (empty($includes)) {

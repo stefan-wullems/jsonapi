@@ -7,7 +7,6 @@ namespace Proglum\JsonApi\Models\Transformers;
 use Proglum\JsonApi\Models\Transformers\Limiters\LimiterInterface;
 use Proglum\JsonApi\Models\Transformers\Sorters\SorterInterface;
 use Proglum\JsonApi\Models\Model;
-use App\Log;
 use League\Fractal\TransformerAbstract as FractalTransformerAbstract;
 
 /**
@@ -108,7 +107,6 @@ abstract class AbstractTransformer extends FractalTransformerAbstract
      */
     public function mapApiToModel(array $attributes): array
     {
-        Log::debug(get_class($this) . ' -  mapApiToModel()');
         if (!isset($this->autoColumnMap)) {
             return $attributes;
         }
@@ -168,7 +166,6 @@ abstract class AbstractTransformer extends FractalTransformerAbstract
      */
     public function parse(array $attributes): array
     {
-        Log::debug(get_class($this) . ' - parse()');
         return $attributes;
     }
 

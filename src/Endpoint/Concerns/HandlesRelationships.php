@@ -11,7 +11,6 @@ use Proglum\JsonApi\Http\Exceptions\ValidationException;
 use Proglum\JsonApi\Models\Model;
 use Proglum\JsonApi\Models\Serializers\JsonApiRelationshipSerializer;
 use Proglum\JsonApi\Models\Transformers\RelationTransformer;
-use App\Log;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -176,8 +175,6 @@ trait HandlesRelationships
      */
     public function updateRelationship(Request $request, $id, $type): Response
     {
-        Log::debug(get_class($this) . ' -  updateRelationship()');
-
         try {
             /** @var Model $resource */
             $resource = $this->query()->findOrFail($id);

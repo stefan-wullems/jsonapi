@@ -8,7 +8,6 @@ use Proglum\JsonApi\Http\Exceptions\InvalidRequestException;
 use Proglum\JsonApi\Http\Exceptions\ValidationException;
 use Proglum\JsonApi\Http\JsonApiResponse;
 use Proglum\JsonApi\Models\Exceptions\OperationNotImplemented;
-use App\Log;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -218,9 +217,8 @@ trait HandlesPatchMethod
                 throw $exception;
             }
 
-            // Catch the exception. Log it and show the use a nice error message. This will allow the next PATCH message
+            // Catch the exception and show the use a nice error message. This will allow the next PATCH message
             // to run
-            Log::exception($exception);
             return [
                 'op' => (isset($operation['op'])) ? $operation['op'] : '',
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,

@@ -9,7 +9,6 @@ use Proglum\JsonApi\Models\Transformers\AbstractTransformer;
 use Proglum\JsonApi\Http\Exceptions\InvalidRequestException;
 use Proglum\JsonApi\Endpoint\Concerns\CollectionActions\FiltersResources;
 use Proglum\JsonApi\Endpoint\Concerns\CollectionActions\OrdersResources;
-use App\Log;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -76,8 +75,6 @@ trait HandlesResources
      */
     public function index(Request $request, ?Builder $query = null): Response
     {
-        Log::debug(get_class($this) . '- index()');
-
         if (!isset($query)) {
             // Initialize new query to retrieve resources
             $query = $this->query();
@@ -113,8 +110,6 @@ trait HandlesResources
      */
     public function show(Request $request, $id): Response
     {
-        Log::debug(get_class($this) . '- show()');
-
         $query = $this->query()->whereKey($id);
 
         try {
@@ -130,8 +125,6 @@ trait HandlesResources
      */
     public function store(Request $request): Response
     {
-        Log::debug(get_class($this) . '- store()');
-
         $attributes = $request->input('data.attributes', []);
         $relationships = $request->input('data.relationships', []);
 
@@ -156,10 +149,6 @@ trait HandlesResources
 
             // Parse attributes
             $transformer = $this->transformer();
-            Log::debug(get_class($this) . '- store() - Parse attributes variables', [
-                'resource' => get_class($resource),
-                'transformer' => get_class($transformer),
-            ]);
             $parsedAttributes = $transformer->parse($attributes);
 
             // Map attributes to database columns
@@ -204,8 +193,6 @@ trait HandlesResources
      */
     public function update(Request $request, $id): Response
     {
-        Log::debug(get_class($this) . '- update()', ['id' => $id]);
-
         $attributes = $request->input('data.attributes', []);
         $relationships = $request->input('data.relationships', []);
 
@@ -253,14 +240,9 @@ trait HandlesResources
      */
     public function destroy(Request $request, $id): Response
     {
-        Log::debug(get_class($this) . '- destroy()');
-
         try {
             $resource = $this->query()->findOrFail($id);
-            Log::debug(get_class($this) . ' - exists. Now delete...');
             $resource->delete();
-
-            Log::debug(get_class($this) . ' - deleted. Now response...');
 
             return $this->deletedResponse();
         } catch (Exception $exception) {
@@ -276,8 +258,6 @@ trait HandlesResources
      */
     public function find(Request $request, string $column, $value = null): Response
     {
-        Log::debug(get_class($this) . '- find()');
-
         if (!isset($value)) {
             $value = $request->input($column);
         }
