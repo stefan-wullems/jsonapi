@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
+class ComposerStaticInitf6c11363ecae2cf2a8e35bdb6d9f9e9e
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -14,18 +14,12 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
-        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
         'bee9632da3ca00a99623b9c35d0c4f8b' => __DIR__ . '/..' . '/laravel/lumen-framework/src/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'v' => 
-        array (
-            'voku\\tests\\' => 11,
-            'voku\\' => 5,
-        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Php73\\' => 23,
@@ -45,19 +39,15 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
             'Symfony\\Component\\Finder\\' => 25,
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'Symfony\\Component\\ErrorHandler\\' => 31,
+            'Symfony\\Component\\Debug\\' => 24,
             'Symfony\\Component\\Console\\' => 26,
-        ),
-        'R' => 
-        array (
-            'Ramsey\\Uuid\\' => 12,
-            'Ramsey\\Collection\\' => 18,
         ),
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
-            'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
+            'Proglum\\JsonApi\\' => 16,
             'PhpOption\\' => 10,
         ),
         'O' => 
@@ -78,7 +68,6 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
             'Illuminate\\View\\' => 16,
             'Illuminate\\Validation\\' => 22,
             'Illuminate\\Translation\\' => 23,
-            'Illuminate\\Testing\\' => 19,
             'Illuminate\\Support\\' => 19,
             'Illuminate\\Session\\' => 19,
             'Illuminate\\Queue\\' => 17,
@@ -119,21 +108,9 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
             'Cron\\' => 5,
             'Carbon\\' => 7,
         ),
-        'B' => 
-        array (
-            'Brick\\Math\\' => 11,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'voku\\tests\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/voku/portable-ascii/tests',
-        ),
-        'voku\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
-        ),
         'Symfony\\Polyfill\\Php73\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php73',
@@ -202,17 +179,13 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
         array (
             0 => __DIR__ . '/..' . '/symfony/error-handler',
         ),
+        'Symfony\\Component\\Debug\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/debug',
+        ),
         'Symfony\\Component\\Console\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
-        ),
-        'Ramsey\\Uuid\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
-        ),
-        'Ramsey\\Collection\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
         'Psr\\SimpleCache\\' => 
         array (
@@ -222,13 +195,13 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
-        'Psr\\EventDispatcher\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
-        ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Proglum\\JsonApi\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
         ),
         'PhpOption\\' => 
         array (
@@ -261,10 +234,6 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
         'Illuminate\\Translation\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/translation',
-        ),
-        'Illuminate\\Testing\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/testing',
         ),
         'Illuminate\\Support\\' => 
         array (
@@ -374,10 +343,6 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
-        'Brick\\Math\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/brick/math/src',
-        ),
     );
 
     public static $classMap = array (
@@ -387,9 +352,9 @@ class ComposerStaticInitb7741e93dd328c3bd66b369256b449a0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb7741e93dd328c3bd66b369256b449a0::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb7741e93dd328c3bd66b369256b449a0::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitb7741e93dd328c3bd66b369256b449a0::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitf6c11363ecae2cf2a8e35bdb6d9f9e9e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitf6c11363ecae2cf2a8e35bdb6d9f9e9e::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitf6c11363ecae2cf2a8e35bdb6d9f9e9e::$classMap;
 
         }, null, ClassLoader::class);
     }

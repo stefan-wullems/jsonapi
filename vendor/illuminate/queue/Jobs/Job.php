@@ -2,10 +2,10 @@
 
 namespace Illuminate\Queue\Jobs;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Queue\Events\JobFailed;
-use Illuminate\Queue\ManuallyFailedException;
 use Illuminate\Support\InteractsWithTime;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Queue\ManuallyFailedException;
 
 abstract class Job
 {
@@ -75,16 +75,6 @@ abstract class Job
     abstract public function getRawBody();
 
     /**
-     * Get the UUID of the job.
-     *
-     * @return string|null
-     */
-    public function uuid()
-    {
-        return $this->payload()['uuid'] ?? null;
-    }
-
-    /**
      * Fire the job.
      *
      * @return void
@@ -121,7 +111,7 @@ abstract class Job
     /**
      * Release the job back into the queue.
      *
-     * @param  int  $delay
+     * @param  int   $delay
      * @return void
      */
     public function release($delay = 0)
@@ -172,7 +162,7 @@ abstract class Job
     /**
      * Delete the job, call the "failed" method, and raise the failed job event.
      *
-     * @param  \Throwable|null  $e
+     * @param  \Throwable|null $e
      * @return void
      */
     public function fail($e = null)
@@ -200,7 +190,7 @@ abstract class Job
     /**
      * Process an exception that caused the job to fail.
      *
-     * @param  \Throwable|null  $e
+     * @param  \Throwable|null $e
      * @return void
      */
     protected function failed($e)
@@ -226,16 +216,6 @@ abstract class Job
     }
 
     /**
-     * Get the resolved job handler instance.
-     *
-     * @return mixed
-     */
-    public function getResolvedJob()
-    {
-        return $this->instance;
-    }
-
-    /**
      * Get the decoded body of the job.
      *
      * @return array
@@ -253,16 +233,6 @@ abstract class Job
     public function maxTries()
     {
         return $this->payload()['maxTries'] ?? null;
-    }
-
-    /**
-     * Get the number of times to attempt a job after an exception.
-     *
-     * @return int|null
-     */
-    public function maxExceptions()
-    {
-        return $this->payload()['maxExceptions'] ?? null;
     }
 
     /**

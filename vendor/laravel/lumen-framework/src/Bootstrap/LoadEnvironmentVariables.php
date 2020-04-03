@@ -3,8 +3,11 @@
 namespace Laravel\Lumen\Bootstrap;
 
 use Dotenv\Dotenv;
+use Dotenv\Environment\DotenvFactory;
 use Dotenv\Exception\InvalidFileException;
-use Illuminate\Support\Env;
+use Dotenv\Environment\Adapter\PutenvAdapter;
+use Dotenv\Environment\Adapter\EnvConstAdapter;
+use Dotenv\Environment\Adapter\ServerConstAdapter;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class LoadEnvironmentVariables
@@ -37,7 +40,7 @@ class LoadEnvironmentVariables
     }
 
     /**
-     * Setup the environment variables.
+     * Setuup the environment variables.
      *
      * If no environment file exists, we continue silently.
      *
@@ -63,9 +66,9 @@ class LoadEnvironmentVariables
     protected function createDotenv()
     {
         return Dotenv::create(
-            Env::getRepository(),
             $this->filePath,
-            $this->fileName
+            $this->fileName,
+            new DotenvFactory([new EnvConstAdapter, new PutenvAdapter, new ServerConstAdapter])
         );
     }
 

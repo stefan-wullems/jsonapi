@@ -2,9 +2,9 @@
 
 namespace Illuminate\Database\Eloquent\Relations;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Concerns\SupportsDefaultModels;
 
 class BelongsTo extends Relation
@@ -13,8 +13,6 @@ class BelongsTo extends Relation
 
     /**
      * The child model instance of the relation.
-     *
-     * @var \Illuminate\Database\Eloquent\Model
      */
     protected $child;
 
@@ -147,7 +145,7 @@ class BelongsTo extends Relation
     /**
      * Initialize the relation on a set of models.
      *
-     * @param  array  $models
+     * @param  array   $models
      * @param  string  $relation
      * @return array
      */
@@ -163,7 +161,7 @@ class BelongsTo extends Relation
     /**
      * Match the eagerly loaded results to their parents.
      *
-     * @param  array  $models
+     * @param  array   $models
      * @param  \Illuminate\Database\Eloquent\Collection  $results
      * @param  string  $relation
      * @return array
@@ -196,6 +194,17 @@ class BelongsTo extends Relation
     }
 
     /**
+     * Update the parent model on the relationship.
+     *
+     * @param  array  $attributes
+     * @return mixed
+     */
+    public function update(array $attributes)
+    {
+        return $this->getResults()->fill($attributes)->save();
+    }
+
+    /**
      * Associate the model instance to the given parent.
      *
      * @param  \Illuminate\Database\Eloquent\Model|int|string  $model
@@ -209,7 +218,7 @@ class BelongsTo extends Relation
 
         if ($model instanceof Model) {
             $this->child->setRelation($this->relationName, $model);
-        } else {
+        } elseif ($this->child->isDirty($this->foreignKey)) {
             $this->child->unsetRelation($this->relationName);
         }
 
@@ -286,7 +295,7 @@ class BelongsTo extends Relation
     protected function relationHasIncrementingId()
     {
         return $this->related->getIncrementing() &&
-            in_array($this->related->getKeyType(), ['int', 'integer']);
+                                $this->related->getKeyType() === 'int';
     }
 
     /**
@@ -356,6 +365,17 @@ class BelongsTo extends Relation
      * @return string
      */
     public function getRelationName()
+    {
+        return $this->relationName;
+    }
+
+    /**
+     * Get the name of the relationship.
+     *
+     * @return string
+     * @deprecated The getRelationName() method should be used instead. Will be removed in Laravel 6.0.
+     */
+    public function getRelation()
     {
         return $this->relationName;
     }

@@ -2,8 +2,8 @@
 
 namespace Illuminate\Queue\Console;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Console\Command;
 
 class ListFailedCommand extends Command
 {
@@ -92,7 +92,7 @@ class ListFailedCommand extends Command
      * Match the job name from the payload.
      *
      * @param  array  $payload
-     * @return string|null
+     * @return string
      */
     protected function matchJobName($payload)
     {

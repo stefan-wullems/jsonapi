@@ -2,22 +2,14 @@
 
 namespace Illuminate\Support\Testing\Fakes;
 
-use Illuminate\Contracts\Mail\Factory;
-use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\MailQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use PHPUnit\Framework\Assert as PHPUnit;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class MailFake implements Factory, Mailer, MailQueue
+class MailFake implements Mailer, MailQueue
 {
-    /**
-     * The mailer currently being used to send a message.
-     *
-     * @var string
-     */
-    protected $currentMailer;
-
     /**
      * All of the mailables that have been sent.
      *
@@ -94,11 +86,7 @@ class MailFake implements Factory, Mailer, MailQueue
      */
     public function assertNothingSent()
     {
-        $mailableNames = collect($this->mailables)->map(function ($mailable) {
-            return get_class($mailable);
-        })->join(', ');
-
-        PHPUnit::assertEmpty($this->mailables, 'The following mailables were sent unexpectedly: '.$mailableNames);
+        PHPUnit::assertEmpty($this->mailables, 'Mailables were sent unexpectedly.');
     }
 
     /**
@@ -157,11 +145,7 @@ class MailFake implements Factory, Mailer, MailQueue
      */
     public function assertNothingQueued()
     {
-        $mailableNames = collect($this->queuedMailables)->map(function ($mailable) {
-            return get_class($mailable);
-        })->join(', ');
-
-        PHPUnit::assertEmpty($this->queuedMailables, 'The following mailables were queued unexpectedly: '.$mailableNames);
+        PHPUnit::assertEmpty($this->queuedMailables, 'Mailables were queued unexpectedly.');
     }
 
     /**
@@ -257,19 +241,6 @@ class MailFake implements Factory, Mailer, MailQueue
     }
 
     /**
-     * Get a mailer instance by name.
-     *
-     * @param  string|null  $name
-     * @return \Illuminate\Mail\Mailer
-     */
-    public function mailer($name = null)
-    {
-        $this->currentMailer = $name;
-
-        return $this;
-    }
-
-    /**
      * Begin the process of mailing a mailable class instance.
      *
      * @param  mixed  $users
@@ -308,7 +279,7 @@ class MailFake implements Factory, Mailer, MailQueue
      *
      * @param  string|array  $view
      * @param  array  $data
-     * @param  \Closure|string|null  $callback
+     * @param  \Closure|string  $callback
      * @return void
      */
     public function send($view, array $data = [], $callback = null)
@@ -316,10 +287,6 @@ class MailFake implements Factory, Mailer, MailQueue
         if (! $view instanceof Mailable) {
             return;
         }
-
-        $view->mailer($this->currentMailer);
-
-        $this->currentMailer = null;
 
         if ($view instanceof ShouldQueue) {
             return $this->queue($view, $data);
@@ -341,10 +308,6 @@ class MailFake implements Factory, Mailer, MailQueue
             return;
         }
 
-        $view->mailer($this->currentMailer);
-
-        $this->currentMailer = null;
-
         $this->queuedMailables[] = $view;
     }
 
@@ -352,8 +315,8 @@ class MailFake implements Factory, Mailer, MailQueue
      * Queue a new e-mail message for sending after (n) seconds.
      *
      * @param  \DateTimeInterface|\DateInterval|int  $delay
-     * @param  \Illuminate\Contracts\Mail\Mailable|string|array  $view
-     * @param  string|null  $queue
+     * @param  string|array|\Illuminate\Contracts\Mail\Mailable  $view
+     * @param  string  $queue
      * @return mixed
      */
     public function later($delay, $view, $queue = null)

@@ -3,14 +3,13 @@
 namespace Illuminate\Http\Resources\Json;
 
 use ArrayAccess;
-use Illuminate\Container\Container;
-use Illuminate\Contracts\Routing\UrlRoutable;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Database\Eloquent\JsonEncodingException;
-use Illuminate\Http\Resources\ConditionallyLoadsAttributes;
-use Illuminate\Http\Resources\DelegatesToResource;
 use JsonSerializable;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Routing\UrlRoutable;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Resources\DelegatesToResource;
+use Illuminate\Http\Resources\ConditionallyLoadsAttributes;
 
 class JsonResource implements ArrayAccess, JsonSerializable, Responsable, UrlRoutable
 {
@@ -119,25 +118,6 @@ class JsonResource implements ArrayAccess, JsonSerializable, Responsable, UrlRou
         return is_array($this->resource)
             ? $this->resource
             : $this->resource->toArray();
-    }
-
-    /**
-     * Convert the model instance to JSON.
-     *
-     * @param  int  $options
-     * @return string
-     *
-     * @throws \Illuminate\Database\Eloquent\JsonEncodingException
-     */
-    public function toJson($options = 0)
-    {
-        $json = json_encode($this->jsonSerialize(), $options);
-
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw JsonEncodingException::forResource($this, json_last_error_msg());
-        }
-
-        return $json;
     }
 
     /**

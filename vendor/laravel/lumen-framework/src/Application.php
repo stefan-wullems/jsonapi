@@ -2,23 +2,19 @@
 
 namespace Laravel\Lumen;
 
-use Exception;
-use Illuminate\Config\Repository as ConfigRepository;
-use Illuminate\Container\Container;
-use Illuminate\Filesystem\Filesystem;
+use RuntimeException;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Log\LogManager;
 use Illuminate\Support\Composer;
+use Laravel\Lumen\Routing\Router;
+use Illuminate\Container\Container;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
-use Laravel\Lumen\Routing\Router;
-use Nyholm\Psr7\Factory\Psr17Factory;
-use Nyholm\Psr7\Response as PsrResponse;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
-use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Zend\Diactoros\Response as PsrResponse;
+use Illuminate\Config\Repository as ConfigRepository;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class Application extends Container
@@ -97,6 +93,10 @@ class Application extends Container
      */
     public function __construct($basePath = null)
     {
+        if (! empty(env('APP_TIMEZONE'))) {
+            date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
+        }
+
         $this->basePath = $basePath;
 
         $this->bootstrapContainer();
@@ -140,7 +140,7 @@ class Application extends Container
      */
     public function version()
     {
-        return 'Lumen (7.0.3) (Laravel Components ^7.0)';
+        return 'Lumen (5.8.12) (Laravel Components 5.8.*)';
     }
 
     /**
@@ -364,8 +364,6 @@ class Application extends Container
     protected function registerDatabaseBindings()
     {
         $this->singleton('db', function () {
-            $this->configure('app');
-
             return $this->loadComponent(
                 'database', [
                     'Illuminate\Database\DatabaseServiceProvider',
@@ -514,15 +512,8 @@ class Application extends Container
      */
     protected function registerPsrRequestBindings()
     {
-        $this->singleton(ServerRequestInterface::class, function ($app) {
-            if (class_exists(Psr17Factory::class) && class_exists(PsrHttpFactory::class)) {
-                $psr17Factory = new Psr17Factory;
-
-                return (new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory))
-                    ->createRequest($app->make('request'));
-            }
-
-            throw new Exception('Unable to resolve PSR request. Please install symfony/psr-http-message-bridge and nyholm/psr7.');
+        $this->singleton('Psr\Http\Message\ServerRequestInterface', function () {
+            return (new DiactorosFactory)->createRequest($this->make('request'));
         });
     }
 
@@ -533,12 +524,8 @@ class Application extends Container
      */
     protected function registerPsrResponseBindings()
     {
-        $this->singleton(ResponseInterface::class, function () {
-            if (class_exists(PsrResponse::class)) {
-                return new PsrResponse;
-            }
-
-            throw new Exception('Unable to resolve PSR response. Please install nyholm/psr7.');
+        $this->singleton('Psr\Http\Message\ResponseInterface', function () {
+            return new PsrResponse();
         });
     }
 
@@ -685,7 +672,7 @@ class Application extends Container
      * Register the facades for the application.
      *
      * @param  bool  $aliases
-     * @param  array  $userAliases
+     * @param  array $userAliases
      * @return void
      */
     public function withFacades($aliases = true, $userAliases = [])
@@ -773,17 +760,6 @@ class Application extends Container
     }
 
     /**
-     * Get the path to the application configuration files.
-     *
-     * @param  string  $path
-     * @return string
-     */
-    public function configPath($path = '')
-    {
-        return $this->basePath.DIRECTORY_SEPARATOR.'config'.($path ? DIRECTORY_SEPARATOR.$path : $path);
-    }
-
-    /**
      * Get the path to the database directory.
      *
      * @param  string  $path
@@ -832,6 +808,26 @@ class Application extends Container
     }
 
     /**
+     * Determine if the application routes are cached.
+     *
+     * @return bool
+     */
+    public function routesAreCached()
+    {
+        return false;
+    }
+
+    /**
+     * Determine if the application configuration is cached.
+     *
+     * @return bool
+     */
+    public function configurationIsCached()
+    {
+        return false;
+    }
+
+    /**
      * Determine if the application events are cached.
      *
      * @return bool
@@ -848,7 +844,7 @@ class Application extends Container
      */
     public function runningInConsole()
     {
-        return \PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg';
+        return php_sapi_name() === 'cli' || php_sapi_name() === 'phpdbg';
     }
 
     /**
@@ -932,39 +928,6 @@ class Application extends Container
     }
 
     /**
-     * Get the current application locale.
-     *
-     * @return string
-     */
-    public function getLocale()
-    {
-        return $this['config']->get('app.locale');
-    }
-
-    /**
-     * Set the current application locale.
-     *
-     * @param  string  $locale
-     * @return void
-     */
-    public function setLocale($locale)
-    {
-        $this['config']->set('app.locale', $locale);
-        $this['translator']->setLocale($locale);
-    }
-
-    /**
-     * Determine if application locale is the given locale.
-     *
-     * @param  string  $locale
-     * @return bool
-     */
-    public function isLocale($locale)
-    {
-        return $this->getLocale() == $locale;
-    }
-
-    /**
      * Register the core container aliases.
      *
      * @return void
@@ -991,10 +954,6 @@ class Application extends Container
             'log' => 'Psr\Log\LoggerInterface',
             'Illuminate\Contracts\Queue\Factory' => 'queue',
             'Illuminate\Contracts\Queue\Queue' => 'queue.connection',
-            'Illuminate\Redis\RedisManager' => 'redis',
-            'Illuminate\Contracts\Redis\Factory' => 'redis',
-            'Illuminate\Redis\Connections\Connection' => 'redis.connection',
-            'Illuminate\Contracts\Redis\Connection' => 'redis.connection',
             'request' => 'Illuminate\Http\Request',
             'Laravel\Lumen\Routing\Router' => 'router',
             'Illuminate\Contracts\Translation\Translator' => 'translator',

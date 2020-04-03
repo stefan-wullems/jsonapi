@@ -26,7 +26,7 @@ use League\Fractal\Serializer\SerializerAbstract;
  * context. For example, the same resource could be attached to multiple scopes.
  * There are root scopes, parent scopes and child scopes.
  */
-class Scope implements \JsonSerializable
+class Scope
 {
     /**
      * @var array
@@ -262,10 +262,6 @@ class Scope implements \JsonSerializable
             $data = $data + $includedData;
         }
 
-        if (!empty($this->availableIncludes)) {
-            $data = $serializer->injectAvailableIncludeData($data, $this->availableIncludes);
-        }
-
         if ($this->resource instanceof Collection) {
             if ($this->resource->hasCursor()) {
                 $pagination = $serializer->cursor($this->resource->getCursor());
@@ -293,14 +289,6 @@ class Scope implements \JsonSerializable
     }
 
     /**
-     * @return array
-     */
-    public function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
-  /**
      * Convert the current data for this scope to JSON.
      *
      * @param int $options
@@ -309,7 +297,7 @@ class Scope implements \JsonSerializable
      */
     public function toJson($options = 0)
     {
-        return json_encode($this, $options);
+        return json_encode($this->toArray(), $options);
     }
 
     /**

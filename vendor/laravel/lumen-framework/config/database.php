@@ -107,7 +107,7 @@ return [
 
     'redis' => [
 
-        'client' => env('REDIS_CLIENT', 'phpredis'),
+        'client' => 'predis',
 
         'cluster' => env('REDIS_CLUSTER', false),
 
