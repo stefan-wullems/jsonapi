@@ -2,7 +2,7 @@
     "name": "proglum/jsonapi",
     "description": "JsonApi abstraction",
     "type": "library",
-    "version": "1.0.2",
+    "version": "1.0.1",
     "authors": [
         {
             "name": "stefanwullems",
@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": "^7.3",
-        "laravel/lumen-framework": "^5.8",
-        "league/fractal": "^0.18.0"
+        "laravel/lumen-framework": "^7.0",
+        "league/fractal": "^0.19.2"
     },
     "autoload": {
       "psr-4": {

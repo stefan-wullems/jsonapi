@@ -2,8 +2,8 @@
 
 namespace Illuminate\Database\Schema;
 
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Fluent;
 
 /**
  * @method ColumnDefinition after(string $column) Place the column "after" another column (MySQL)
@@ -21,7 +21,7 @@ use Illuminate\Database\Query\Expression;
  * @method ColumnDefinition primary() Add a primary index
  * @method ColumnDefinition spatialIndex() Add a spatial index
  * @method ColumnDefinition storedAs(string $expression) Create a stored generated column (MySQL)
- * @method ColumnDefinition unique() Add a unique index
+ * @method ColumnDefinition unique(string $indexName = null) Add a unique index
  * @method ColumnDefinition unsigned() Set the INTEGER column as UNSIGNED (MySQL)
  * @method ColumnDefinition useCurrent() Set the TIMESTAMP column to use CURRENT_TIMESTAMP as default value
  * @method ColumnDefinition virtualAs(string $expression) Create a virtual generated column (MySQL)
