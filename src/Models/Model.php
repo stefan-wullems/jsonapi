@@ -21,6 +21,8 @@ abstract class Model extends EloquentModel
     /** @var string|callable Used to identify model with friendly name */
     public $titleField;
 
+    protected $keyType = 'string';
+
     /** @var string Used to map to audit category */
     public $auditCategory;
 
